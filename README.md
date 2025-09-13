@@ -169,4 +169,97 @@ MIT License - Utilisez librement pour vos projets
 ---
 
 **LinkedScraper** - L'alternative simple et efficace à Phantombuster 🚀
-# scrap
+# Google Maps Places Scraper
+
+Une application web moderne pour extraire des données d'établissements (restaurants, hôtels, supermarchés, etc.) avec export CSV/JSON.
+
+## 🚀 Fonctionnalités
+
+- **Recherche d'établissements** : Restaurants, supermarchés, hôtels, pharmacies, etc.
+- **Recherche par ville** : Paris, Lyon, Marseille, Nice, et plus
+- **Export des données** : CSV et JSON
+- **Interface moderne** : Design responsive avec Tailwind CSS
+- **Authentification** : Système de connexion avec Supabase
+- **Limites d'utilisation** : Gestion des quotas mensuels
+
+## 📋 Prérequis
+
+- Node.js 18+
+- Compte Supabase (gratuit)
+- NPM ou Yarn
+
+## 🛠️ Installation
+
+1. **Cloner le repository**
+```bash
+git clone https://github.com/kapeupro/scrap.git
+cd scrap
+```
+
+2. **Installer les dépendances**
+```bash
+npm install
+```
+
+3. **Configuration des variables d'environnement**
+
+Copier le fichier `.env.example` en `.env.local` :
+```bash
+cp .env.example .env.local
+```
+
+Puis remplir les variables avec vos clés Supabase :
+- `NEXT_PUBLIC_SUPABASE_URL` : URL de votre projet Supabase
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` : Clé publique anonyme
+- `SUPABASE_SERVICE_ROLE_KEY` : Clé de service (privée)
+
+4. **Configurer la base de données Supabase**
+
+Exécuter le script SQL `database-schema-simple.sql` dans l'éditeur SQL de Supabase.
+
+5. **Lancer l'application**
+```bash
+npm run dev
+```
+
+L'application sera accessible sur http://localhost:3000
+
+## 🎯 Utilisation
+
+1. **Créer un compte** : Inscription via email/mot de passe
+2. **Se connecter** : Connexion avec vos identifiants
+3. **Rechercher** : Entrer un type d'établissement et une ville
+4. **Exporter** : Télécharger les résultats en CSV ou JSON
+
+## 🏗️ Technologies utilisées
+
+- **Frontend** : Next.js 14, React, Tailwind CSS
+- **Backend** : API Routes Next.js
+- **Base de données** : Supabase (PostgreSQL)
+- **API de données** : OpenStreetMap Overpass API
+- **Authentification** : Supabase Auth
+
+## 📝 Structure du projet
+
+```
+scrap/
+├── components/          # Composants React
+├── lib/                # Utilitaires et API
+├── pages/              # Pages Next.js
+│   ├── api/           # API Routes
+│   └── index.js       # Page principale
+├── styles/            # Styles CSS
+└── database-schema-simple.sql  # Schéma de base de données
+```
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
+
+## 📄 Licence
+
+MIT
+
+## 👨‍💻 Auteur
+
+Développé avec ❤️ par [kapeupro](https://github.com/kapeupro)
