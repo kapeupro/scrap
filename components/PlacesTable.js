@@ -59,7 +59,7 @@ export default function PlacesTable({ places }) {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {place.phone !== 'N/A' && place.phone ? (
-                  <a href={`tel:${place.phone}`} className="text-blue-600 hover:underline">
+                  <a href={`tel:${place.phone}`} className="text-primary-600 hover:underline">
                     {place.phone}
                   </a>
                 ) : (
@@ -72,7 +72,7 @@ export default function PlacesTable({ places }) {
                     href={place.website.startsWith('http') ? place.website : `https://${place.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-primary-600 hover:underline"
                   >
                     Visiter
                   </a>

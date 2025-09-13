@@ -28,7 +28,7 @@ export default function PlaceCard({ place }) {
         {place.phone && place.phone !== 'N/A' && (
           <div className="flex items-start">
             <span className="text-gray-500 mr-2">📞</span>
-            <a href={`tel:${place.phone}`} className="text-blue-600 hover:underline">
+            <a href={`tel:${place.phone}`} className="text-primary-600 hover:underline">
               {place.phone}
             </a>
           </div>
@@ -41,7 +41,7 @@ export default function PlaceCard({ place }) {
               href={place.website.startsWith('http') ? place.website : `https://${place.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-primary-600 hover:underline"
             >
               Site web
             </a>
