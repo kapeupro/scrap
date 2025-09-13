@@ -12,7 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [places, setPlaces] = useState([])
   const [searchLoading, setSearchLoading] = useState(false)
-  const [usage, setUsage] = useState({ current: 0, limit: 100 })
+  const [usage, setUsage] = useState(null)
   const [searchTrigger, setSearchTrigger] = useState(0)
   
   const dashboardRef = useRef(null)
@@ -39,6 +39,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
+      console.log('🔄 User detected, fetching usage stats...')
       fetchUsageStats()
     }
   }, [user])
@@ -46,17 +47,22 @@ export default function Home() {
   const fetchUsageStats = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      console.log('📊 Fetching usage stats from API...')
       const response = await fetch('/api/usage', {
         headers: {
-          'Authorization': `Bearer ${session?.access_token}`
+          'Authorization': `Bearer ${session?.access_token}`,
+          'Cache-Control': 'no-cache'
         }
       })
       if (response.ok) {
         const data = await response.json()
+        console.log('📊 Usage stats received:', data)
         setUsage(data)
+      } else {
+        console.error('❌ Failed to fetch usage stats:', response.status)
       }
     } catch (error) {
-      console.error('Erreur lors du chargement des statistiques:', error)
+      console.error('❌ Error loading usage stats:', error)
     }
   }
 
@@ -81,8 +87,25 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json()
         setPlaces(data.places || [])
-        // Immediately increment the search trigger
+        // Force immediate update of usage state
         console.log('✅ Search completed successfully')
+        
+        // Update usage state immediately (optimistic update)
+        setUsage(prevUsage => {
+          if (prevUsage) {
+            const newCurrent = prevUsage.current + 1
+            console.log('📊 Optimistic update: current searches now', newCurrent)
+            return { ...prevUsage, current: newCurrent }
+          }
+          return prevUsage
+        })
+        
+        // Also refresh from API to get accurate data
+        setTimeout(() => {
+          fetchUsageStats()
+        }, 1000)
+        
+        // Also trigger refresh
         setSearchTrigger(prev => {
           const newValue = prev + 1
           console.log('🔄 Incrementing search trigger to:', newValue)
@@ -213,7 +236,7 @@ export default function Home() {
 
               {/* Subscription Status */}
               <div>
-                <SubscriptionStatus user={user} refreshTrigger={searchTrigger} />
+                <SubscriptionStatus user={user} refreshTrigger={searchTrigger} usage={usage} />
               </div>
             </div>
 

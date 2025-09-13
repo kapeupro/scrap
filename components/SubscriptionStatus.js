@@ -1,9 +1,18 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
-export default function SubscriptionStatus({ user, refreshTrigger }) {
+export default function SubscriptionStatus({ user, refreshTrigger, usage: parentUsage }) {
   const [usage, setUsage] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  // Use parent usage if available, otherwise fetch our own
+  useEffect(() => {
+    if (parentUsage) {
+      console.log('📊 Using parent usage data:', parentUsage)
+      setUsage(parentUsage)
+      setLoading(false)
+    }
+  }, [parentUsage])
 
   const fetchUsageStats = async () => {
     if (!user) return
@@ -30,18 +39,23 @@ export default function SubscriptionStatus({ user, refreshTrigger }) {
     }
   }
 
-  // Initial load
+  // Initial load (only if no parent usage)
   useEffect(() => {
-    fetchUsageStats()
-  }, [user])
+    if (!parentUsage && user) {
+      console.log('🔄 SubscriptionStatus: No parent usage, fetching stats...')
+      fetchUsageStats()
+    } else if (parentUsage) {
+      console.log('📊 SubscriptionStatus: Using parent usage data')
+    }
+  }, [user, parentUsage])
 
   // Refresh on trigger change
   useEffect(() => {
-    if (refreshTrigger > 0) {
+    if (refreshTrigger > 0 && !parentUsage) {
       console.log('🔄 Refresh trigger activated:', refreshTrigger)
       setTimeout(fetchUsageStats, 1000)
     }
-  }, [refreshTrigger])
+  }, [refreshTrigger, parentUsage])
 
   if (loading) {
     return (
@@ -58,9 +72,31 @@ export default function SubscriptionStatus({ user, refreshTrigger }) {
   const percentage = limit > 0 ? (current / limit) * 100 : 0
   const remaining = Math.max(0, limit - current)
   
-  console.log('SubscriptionStatus render:', { current, limit, percentage, remaining })
+  console.log('SubscriptionStatus render:', { current, limit, percentage, remaining, planType, planFeatures })
   
-  const planInfo = planFeatures[planType]
+  // Default plan features if not provided
+  const defaultPlanFeatures = {
+    starter: {
+      name: 'Gratuit',
+      searches: '100 recherches/semaine',
+      features: ['Export CSV & JSON', 'Support communauté', 'Données de base']
+    },
+    pro: {
+      name: 'Pro',
+      price: '29€/mois',
+      searches: '1,000 recherches/mois',
+      features: ['Export CSV & JSON', 'Support prioritaire', 'Données enrichies', 'API access']
+    },
+    agency: {
+      name: 'Agency',
+      price: '99€/mois',
+      searches: '5,000 recherches/mois',
+      features: ['Export CSV & JSON', 'Support dédié', 'Données complètes', 'API illimitée', 'White-label']
+    }
+  }
+  
+  const availablePlanFeatures = planFeatures || defaultPlanFeatures
+  const planInfo = availablePlanFeatures[planType] || availablePlanFeatures.starter
   const isNearLimit = percentage >= 80
   const isOverLimit = percentage >= 100
 
@@ -124,12 +160,13 @@ export default function SubscriptionStatus({ user, refreshTrigger }) {
         
         <div className="w-full bg-gray-200 rounded-full h-3">
           <div 
-            className={`h-3 rounded-full transition-all duration-300 ${
+            className={`h-3 rounded-full transition-all duration-500 ${
               isOverLimit ? 'bg-red-500' : 
               isNearLimit ? 'bg-orange-500' : 
               'bg-primary-500'
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
+            key={`progress-${current}-${limit}`}
           ></div>
         </div>
         
